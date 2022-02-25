@@ -1,0 +1,34 @@
+# Maintainer: Ben Mezger <me at benmezger dot nl>
+
+_upstream_name=dwm
+pkgname=$_upstream_name
+pkgver=r648.0cdbfd6
+pkgrel=1
+pkgdesc="SEDS dwm configuration"
+arch=('x86_64')
+url="https://github.com/benmezger/dwm"
+license=('MIT')
+source=('git+https://github.com/benmezger/dwm.git')
+md5sums=('SKIP')
+options=(zipman)
+depends=('libx11' 'libxinerama' 'libxft' 'freetype2')
+optdepends=('alacritty' 'dmenu')
+
+pkgver() {
+  cd "${srcdir}/${pkgname}"
+  printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short=7 HEAD)"
+}
+
+build() {
+  cd "${srcdir}/${pkgname}/finalized"
+  make clean
+  make
+}
+
+package() {
+  cd "${srcdir}/${pkgname}/finalized"
+  make PREFIX=/usr DESTDIR="${pkgdir}/" install
+
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+  install -Dm644 README "$pkgdir/usr/share/doc/$pkgname/README"
+}

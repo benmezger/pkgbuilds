@@ -1,0 +1,9 @@
+src
+pkg
+*.tar
+*.zip
+*.bz2
+*.sig
+*.zst
+*.tar.xz
+*.deb

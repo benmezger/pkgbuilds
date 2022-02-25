@@ -1,0 +1,18 @@
+pkgbase = dwm
+        pkgdesc = SEDS dwm configuration
+        pkgver = r648.0cdbfd6
+        pkgrel = 1
+        url = https://github.com/benmezger/dwm
+        arch = x86_64
+        license = MIT
+        depends = libx11
+        depends = libxinerama
+        depends = libxft
+        depends = freetype2
+        optdepends = alacritty
+        optdepends = dmenu
+        options = zipman
+        source = git+https://github.com/benmezger/dwm.git
+        md5sums = SKIP
+
+pkgname = dwm

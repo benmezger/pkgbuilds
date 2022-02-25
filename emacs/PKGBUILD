@@ -1,0 +1,137 @@
+# Maintainer: Ben Mezger <me at benmezger dot nl>
+
+pkgname=emacs-git
+pkgver=31.0.50.181843
+pkgrel=1
+pkgdesc="GNU Emacs - built with native compilation (AOT), Cairo, tree-sitter, ImageMagick"
+arch=('x86_64')
+url="https://www.gnu.org/software/emacs/"
+license=('GPL-3.0-or-later')
+depends=(
+    'cairo'
+    'dbus'
+    'gtk3'
+    'harfbuzz'
+    'imagemagick'
+    'jansson'
+    'libgccjit'
+    'libjpeg-turbo'
+    'libpng'
+    'librsvg'
+    'libsystemd'
+    'libtiff'
+    'libwebp'
+    'libxml2'
+    'libxpm'
+    'pango'
+    'sqlite'
+    'tree-sitter'
+    'zlib'
+)
+makedepends=(
+    'gcc'
+    'git'
+    'texinfo'
+)
+optdepends=(
+    'hunspell: spell checking'
+    'mailutils: sending mail'
+)
+provides=('emacs')
+conflicts=('emacs')
+source=("emacs::git+https://github.com/emacs-mirror/emacs.git#branch=master")
+sha256sums=('SKIP')
+options=(!strip)
+
+_cflags=(
+    -march=native
+    -mtune=native
+    -pipe
+    -fno-plt
+    -fexceptions
+    -Wp,-D_FORTIFY_SOURCE=3
+    -Wformat
+    -Werror=format-security
+    -fstack-clash-protection
+    -fcf-protection
+    -fno-omit-frame-pointer
+    -mno-omit-leaf-frame-pointer
+    -g
+    "-ffile-prefix-map=/build/emacs/src=/usr/src/debug/emacs"
+    -flto=auto
+)
+
+_ldflags=(
+    -Wl,-O1
+    -Wl,--sort-common
+    -Wl,--as-needed
+    -Wl,-z,relro
+    -Wl,-z,now
+    -Wl,-z,pack-relative-relocs
+    -flto=auto
+)
+
+_configure_flags=(
+    --prefix=/usr
+    --sysconfdir=/etc
+    --libexecdir=/usr/lib
+    --localstatedir=/var
+    --disable-build-details
+    --with-x-toolkit=gtk3
+    --with-cairo
+    --with-harfbuzz
+    --with-libsystemd
+    --with-modules
+    --with-native-compilation=aot
+    --with-tree-sitter
+    --with-imagemagick
+    --without-mailutils
+    --without-gpm
+    --without-compress-install
+    --program-transform-name='s/\([ec]tags\)/\1.emacs/'
+)
+
+pkgver() {
+    cd "$srcdir/emacs"
+    printf "%s.%s" \
+        $(grep AC_INIT configure.ac | \
+          awk -F',' '{ gsub("[ \\[\\]]","",$2); print $2 }') \
+        $(git rev-list --count HEAD)
+}
+
+prepare() {
+    cd "$srcdir/emacs"
+    make clean
+    ./autogen.sh 
+    rm -rf "$srcdir/emacs/build"
+    mkdir -p "$srcdir/emacs/build"
+}
+
+build() {
+    cd "$srcdir/emacs/build"
+
+    export CFLAGS="${_cflags[*]}"
+    export LDFLAGS="${_ldflags[*]}"
+
+    ../configure "${_configure_flags[@]}"
+
+    # Do NOT use -j here: parallel jobs are known to cause segfaults
+    # during AOT native compilation via libgccjit (cc-engine.elc etc.)
+    make
+}
+
+check() {
+    cd "$srcdir/emacs/build"
+    make check
+}
+
+package() {
+    cd "$srcdir/emacs/build"
+    make DESTDIR="$pkgdir" install
+
+    find "$pkgdir/usr/share/info" -name "*.info" -exec gzip -9 {} \; 2>/dev/null || true
+
+    install -dm755 "$pkgdir/usr/share/emacs/site-lisp"
+
+    install -Dm644 COPYING "$pkgdir/usr/share/licenses/$pkgname/COPYING"
+}

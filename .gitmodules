@@ -1,0 +1,7 @@
+[submodule "spotify"]
+	path = spotify
+	url = https://aur.archlinux.org/spotify.git
+	ignore = untracked
+[submodule "gitmux-git"]
+	path = gitmux-git
+	url = ssh://aur@aur.archlinux.org/gitmux-git.git

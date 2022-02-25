@@ -1,0 +1,37 @@
+pkgbase = emacs-git
+	pkgdesc = GNU Emacs - built with native compilation (AOT), Cairo, tree-sitter, ImageMagick
+	pkgver = 31
+	pkgrel = 1
+	url = https://www.gnu.org/software/emacs/
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = gcc
+	makedepends = git
+	makedepends = texinfo
+	depends = cairo
+	depends = dbus
+	depends = gtk3
+	depends = harfbuzz
+	depends = imagemagick
+	depends = jansson
+	depends = libgccjit
+	depends = libjpeg-turbo
+	depends = libpng
+	depends = librsvg
+	depends = libsystemd
+	depends = libtiff
+	depends = libwebp
+	depends = libxml2
+	depends = libxpm
+	depends = pango
+	depends = sqlite
+	depends = tree-sitter
+	depends = zlib
+	optdepends = hunspell: spell checking
+	optdepends = mailutils: sending mail
+	provides = emacs
+	conflicts = emacs
+	source = emacs::git+https://github.com/emacs-mirror/emacs.git#branch=master
+	sha256sums = SKIP
+
+pkgname = emacs-git
