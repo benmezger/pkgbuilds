@@ -1,7 +1,7 @@
 # Maintainer: Ben Mezger <me at benmezger dot nl>
 
 pkgname=emacs
-pkgver=30.2.4
+pkgver=30.2.5
 _basever=30.2
 pkgrel=1
 pkgdesc="GNU Emacs - built with native compilation (AOT), Cairo, tree-sitter, ImageMagick"
@@ -103,7 +103,11 @@ pkgver() {
 prepare() {
     cd "$srcdir/emacs-$_basever"
     make clean
-    ./autogen.sh 
+    ./autogen.sh
+
+    # tree-sitter >= 0.24 renamed ts_language_version to ts_language_abi_version
+    sed -i 's/ts_language_version/ts_language_abi_version/g' src/treesit.c
+
     rm -rf "$srcdir/emacs-$_basever/build"
     mkdir -p "$srcdir/emacs-$_basever/build"
 }
