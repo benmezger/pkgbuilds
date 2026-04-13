@@ -1,7 +1,7 @@
 # Maintainer: Ben Mezger <me at benmezger dot nl>
 
 pkgname=emacs
-pkgver=30.2.5
+pkgver=30.2.6
 _basever=30.2
 pkgrel=1
 pkgdesc="GNU Emacs - built with native compilation (AOT), Cairo, tree-sitter, ImageMagick"
@@ -102,7 +102,6 @@ pkgver() {
 
 prepare() {
     cd "$srcdir/emacs-$_basever"
-    make clean
     ./autogen.sh
 
     # tree-sitter >= 0.24 renamed ts_language_version to ts_language_abi_version
@@ -125,7 +124,7 @@ build() {
 
 check() {
     cd "$srcdir/emacs-$_basever/build"
-    ./emacs -Q --batch --eval '(message "test")'
+    ./src/emacs -Q --batch --eval '(message "test")'
 }
 
 package() {
@@ -136,5 +135,5 @@ package() {
 
     install -dm755 "$pkgdir/usr/share/emacs/site-lisp"
 
-    install -Dm644 COPYING "$pkgdir/usr/share/licenses/$pkgname/COPYING"
+    install -Dm644 "$srcdir/emacs-$_basever/COPYING" "$pkgdir/usr/share/licenses/$pkgname/COPYING"
 }
