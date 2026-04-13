@@ -1,7 +1,8 @@
 # Maintainer: Ben Mezger <me at benmezger dot nl>
 
-pkgname=emacs-git
-pkgver=31.0.50.181843
+pkgname=emacs
+pkgver=30.2.4
+_basever=30.2
 pkgrel=1
 pkgdesc="GNU Emacs - built with native compilation (AOT), Cairo, tree-sitter, ImageMagick"
 arch=('x86_64')
@@ -39,8 +40,8 @@ optdepends=(
 )
 provides=('emacs')
 conflicts=('emacs')
-source=("emacs::git+https://github.com/emacs-mirror/emacs.git#branch=master")
-sha256sums=('SKIP')
+source=("https://ftp.gnu.org/gnu/emacs/emacs-${_basever}.tar.gz")
+b2sums=('SKIP')
 options=(!strip)
 
 _cflags=(
@@ -92,7 +93,7 @@ _configure_flags=(
 )
 
 pkgver() {
-    cd "$srcdir/emacs"
+    cd "$srcdir/emacs-$_basever"
     printf "%s.%s" \
         $(grep AC_INIT configure.ac | \
           awk -F',' '{ gsub("[ \\[\\]]","",$2); print $2 }') \
@@ -100,15 +101,15 @@ pkgver() {
 }
 
 prepare() {
-    cd "$srcdir/emacs"
+    cd "$srcdir/emacs-$_basever"
     make clean
     ./autogen.sh 
-    rm -rf "$srcdir/emacs/build"
-    mkdir -p "$srcdir/emacs/build"
+    rm -rf "$srcdir/emacs-$_basever/build"
+    mkdir -p "$srcdir/emacs-$_basever/build"
 }
 
 build() {
-    cd "$srcdir/emacs/build"
+    cd "$srcdir/emacs-$_basever/build"
 
     export CFLAGS="${_cflags[*]}"
     export LDFLAGS="${_ldflags[*]}"
@@ -119,12 +120,12 @@ build() {
 }
 
 check() {
-    cd "$srcdir/emacs/build"
+    cd "$srcdir/emacs-$_basever/build"
     ./emacs -Q --batch --eval '(message "test")'
 }
 
 package() {
-    cd "$srcdir/emacs/build"
+    cd "$srcdir/emacs-$_basever/build"
     make DESTDIR="$pkgdir" install
 
     find "$pkgdir/usr/share/info" -name "*.info" -exec gzip -9 {} \; 2>/dev/null || true
