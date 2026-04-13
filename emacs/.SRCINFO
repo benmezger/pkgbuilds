@@ -1,6 +1,6 @@
-pkgbase = emacs-git
+pkgbase = emacs
 	pkgdesc = GNU Emacs - built with native compilation (AOT), Cairo, tree-sitter, ImageMagick
-	pkgver = 31
+	pkgver = 30.2.6
 	pkgrel = 1
 	url = https://www.gnu.org/software/emacs/
 	arch = x86_64
@@ -31,7 +31,8 @@ pkgbase = emacs-git
 	optdepends = mailutils: sending mail
 	provides = emacs
 	conflicts = emacs
-	source = emacs::git+https://github.com/emacs-mirror/emacs.git#branch=master
-	sha256sums = SKIP
+	options = !strip
+	source = https://ftp.gnu.org/gnu/emacs/emacs-30.2.tar.gz
+	b2sums = SKIP
 
-pkgname = emacs-git
+pkgname = emacs
