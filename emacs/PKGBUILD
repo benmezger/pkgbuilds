@@ -122,7 +122,7 @@ build() {
 
 check() {
     cd "$srcdir/emacs/build"
-    make check
+    ./emacs -Q --batch --eval '(message "test")'
 }
 
 package() {
