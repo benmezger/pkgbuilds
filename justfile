@@ -1,5 +1,4 @@
 set shell := ["/bin/bash", "-c", "-eu", "-o", "pipefail"]
-PACKAGE_FILE := "PACKAGES"
 makepkg_flags := "-f"
 
 arch := "x86_64"
@@ -8,13 +7,6 @@ arch := "x86_64"
 # 1. build <package>
 # 2. pkgcheck <package>
 # 3. copy <package>
-
-all:
-        @echo "Using {{PACKAGE_FILE}} file"
-        just clone
-        for pkg in `cat {{PACKAGE_FILE}}`; do \
-            just single $pkg; \
-        done
 
 single target:
         just makepkg_flags={{makepkg_flags}} build {{target}}
@@ -47,9 +39,3 @@ check-updates:
 check-update target:
         just makepkg_flags="--nobuild" build {{target}}; \
         cd {{target}} && git diff
-
-clone:
-        @echo "Initializing and cloning submodules"
-        git submodule update --init --recursive
-        git pull --recurse-submodules --jobs=10
-
