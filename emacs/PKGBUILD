@@ -115,9 +115,7 @@ build() {
 
     ../configure "${_configure_flags[@]}"
 
-    # Do NOT use -j here: parallel jobs are known to cause segfaults
-    # during AOT native compilation via libgccjit (cc-engine.elc etc.)
-    make
+    make -j$(nproc)
 }
 
 check() {
