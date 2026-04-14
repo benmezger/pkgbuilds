@@ -1,7 +1,7 @@
 # Maintainer: Ben Mezger <me at benmezger dot nl>
 
 pkgname=emacs
-pkgver=30.2.6
+pkgver=30.2.8
 _basever=30.2
 pkgrel=1
 pkgdesc="GNU Emacs - built with native compilation (AOT), Cairo, tree-sitter, ImageMagick"
@@ -40,8 +40,14 @@ optdepends=(
 )
 provides=('emacs')
 conflicts=('emacs')
-source=("https://ftp.gnu.org/gnu/emacs/emacs-${_basever}.tar.gz")
-b2sums=('SKIP')
+source=(
+  "https://ftp.gnu.org/gnu/emacs/emacs-${_basever}.tar.gz"
+  01_all_treesit-0.26.patch
+  02_all_ts-query-pred.patch
+)
+b2sums=('82637f8af0b8569f4c0c50966014f304030b7dc5330435a799b6195ea06c217b1fd131dccd5c918193a438b6b7d62d2466a0efd16a85aeafa5dc7d4c55d45d34'
+        '6a4a556ff6e47234c34e6d9b47fd7b51b47f0b66a4a1e6672b604555d48275de7c06afd105b9c4abf9a34eb1fc2148178e97434b9ae92b0345137dc849d5895c'
+        '6f54ca35f5703a248a3db3b39d9666ee28424cdb7240bd0c7a612f387e1cedf9142b6f5b54d00f11b63b97f28d18d763c47b664c36be00e7b07e17cb741712b1')
 options=(!strip)
 
 _cflags=(
@@ -104,8 +110,8 @@ prepare() {
     cd "$srcdir/emacs-$_basever"
     ./autogen.sh
 
-    # tree-sitter >= 0.24 renamed ts_language_version to ts_language_abi_version
-    sed -i 's/ts_language_version/ts_language_abi_version/g' src/treesit.c
+    patch -Np1 < ../01_all_treesit-0.26.patch
+    patch -Np1 < ../02_all_ts-query-pred.patch
 
     rm -rf "$srcdir/emacs-$_basever/build"
     mkdir -p "$srcdir/emacs-$_basever/build"
